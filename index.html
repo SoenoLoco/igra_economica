@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Экономический Симулятор: Бизнес-Баттл</title>
-    <!-- Подключаем шрифты. Montserrat для основного, Rubik Mono One для контурных заголовков -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Rubik+Mono+One&display=swap" rel="stylesheet">
@@ -12,11 +11,11 @@
     <style>
         /* Палитра из референса */
         :root {
-            --bg-cream: #f7f1d8; /* Кремовый фон */
-            --navy: #212b54; /* Темно-синий */
+            --bg-cream: #f7f1d8; 
+            --navy: #212b54; 
             --navy-light: #2e3a6b;
             --white: #ffffff;
-            --accent: #dce6f2; /* Светло-голубой для доп. элементов */
+            --accent: #dce6f2; 
         }
 
         * {
@@ -27,7 +26,7 @@
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #333; /* Темный фон вокруг "телефона" */
+            background-color: #333; 
             color: var(--navy);
             padding: 40px 20px;
             display: flex;
@@ -36,7 +35,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Имитация страницы-лендинга */
         .container {
             max-width: 1000px;
             width: 100%;
@@ -48,7 +46,6 @@
             overflow: hidden;
         }
 
-        /* Декоративный контурный текст на фоне */
         .bg-text {
             position: absolute;
             top: 20px;
@@ -63,7 +60,6 @@
             transform: rotate(-10deg);
         }
 
-        /* Шапка */
         .header-section {
             text-align: center;
             margin-bottom: 50px;
@@ -88,7 +84,6 @@
             color: var(--navy);
         }
 
-        /* Инпут и кнопка в стиле макета */
         .input-group {
             display: flex;
             flex-direction: column;
@@ -139,7 +134,6 @@
             box-shadow: 0 10px 20px rgba(33, 43, 84, 0.3);
         }
 
-        /* Панель показателей (в стиле карточек из блока "Обо мне") */
         .stats-panel {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -176,7 +170,6 @@
             font-size: 28px;
         }
 
-        /* Игровое поле */
         .game-area {
             display: flex;
             flex-direction: column;
@@ -223,7 +216,6 @@
             font-weight: 400;
         }
 
-        /* Варианты ответов (в стиле блока "Услуги") */
         .choices {
             display: flex;
             flex-direction: column;
@@ -253,7 +245,6 @@
             box-shadow: 0 8px 15px rgba(33, 43, 84, 0.3);
         }
 
-        /* Левая часть (текст) */
         .choice-content {
             flex: 1;
             padding-right: 20px;
@@ -276,7 +267,6 @@
             font-weight: 400;
         }
 
-        /* Правая часть (цифра и стрелка, как на макете) */
         .choice-indicator {
             display: flex;
             align-items: center;
@@ -310,7 +300,6 @@
             transform: rotate(45deg);
         }
 
-        /* Журнал */
         .log-section {
             margin-top: 40px;
             position: relative;
@@ -343,7 +332,6 @@
             padding-bottom: 10px;
         }
 
-        /* Экран окончания */
         .game-over-screen { 
             text-align: center; 
             padding: 60px 40px; 
@@ -405,13 +393,117 @@
             display: none !important; 
         }
 
-        /* Адаптив для маленьких экранов */
+        /* =========================================
+           АДАПТИВ ДЛЯ ТЕЛЕФОНОВ (Мобильная версия)
+           ========================================= */
         @media (max-width: 768px) {
-            .container { padding: 20px; }
-            h1 { font-size: 40px; }
-            .stats-panel { grid-template-columns: 1fr 1fr; }
-            .choice-btn { flex-direction: column; align-items: flex-start; }
-            .choice-indicator { margin-top: 15px; width: 100%; justify-content: flex-end; }
+            body {
+                padding: 10px;
+                font-size: 16px; 
+            }
+            .container {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+            h1 {
+                font-size: 32px; 
+                letter-spacing: 1px;
+            }
+            .subtitle {
+                font-size: 14px;
+            }
+            .input-group input, .btn-navy {
+                padding: 15px;
+                font-size: 16px;
+            }
+            
+            /* Сетка показателей 2х2 */
+            .stats-panel {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .stat-box {
+                padding: 15px 10px;
+            }
+            .stat-title {
+                font-size: 12px;
+            }
+            .stat-value {
+                font-size: 20px;
+            }
+
+            /* Блок вопроса */
+            .scenario-box {
+                padding: 25px 15px;
+                border-radius: 15px;
+            }
+            .scenario-title {
+                font-size: 22px;
+            }
+            .scenario-text {
+                font-size: 16px;
+            }
+            .round-counter {
+                font-size: 12px;
+                padding: 5px 15px;
+                margin-bottom: 15px;
+            }
+
+            /* Карточки ответов на мобильных */
+            .choice-btn {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 20px;
+                border-radius: 12px;
+            }
+            .choice-content {
+                padding-right: 0;
+                width: 100%;
+            }
+            .choice-btn strong {
+                font-size: 16px;
+                margin-bottom: 5px;
+            }
+            .choice-btn span {
+                font-size: 13px;
+            }
+            
+            /* Стрелка и номер внизу справа */
+            .choice-indicator {
+                align-self: flex-end;
+                margin-top: 15px;
+                gap: 10px;
+            }
+            .choice-number {
+                font-size: 28px;
+            }
+            .choice-arrow {
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+            }
+
+            /* Финальный экран */
+            .game-over-screen {
+                padding: 30px 15px;
+            }
+            .game-over-screen h2 {
+                font-size: 28px;
+            }
+            .grade-big {
+                font-size: 32px;
+                padding: 10px 20px;
+            }
+            .score-details {
+                gap: 15px;
+            }
+            .score-details div {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            .score-details span {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
@@ -426,7 +518,7 @@
         <div class="subtitle">УПРАВЛЯЙ ПРЕДПРИЯТИЕМ. ПРИВОДИ КОМАНДУ К ПОБЕДЕ.</div>
         <div class="input-group">
             <input type="text" id="team-name" placeholder="ВВЕДИТЕ НАЗВАНИЕ КОМАНДЫ...">
-            <button class="btn-navy" onclick="startGame()">НАЧАТЬ ИГРУ</button>
+            <button class="btn-navy" onclick="startGame()">СВЯЗАТЬСЯ (НАЧАТЬ ИГРУ)</button>
         </div>
     </div>
 
@@ -754,7 +846,6 @@
             const btn = document.createElement('button');
             btn.className = 'choice-btn';
             
-            // Форматируем номер (01, 02, 03...)
             const numStr = (index + 1).toString().padStart(2, '0');
             
             btn.innerHTML = `
