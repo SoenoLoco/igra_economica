@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Экономический Симулятор: Бизнес-Баттл</title>
+    <!-- Подключаем шрифты. Montserrat для основного, Rubik Mono One для контурных заголовков -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Rubik+Mono+One&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Палитра из референса */
+        :root {
+            --bg-cream: #f7f1d8; /* Кремовый фон */
+            --navy: #212b54; /* Темно-синий */
+            --navy-light: #2e3a6b;
+            --white: #ffffff;
+            --accent: #dce6f2; /* Светло-голубой для доп. элементов */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #333; /* Темный фон вокруг "телефона" */
+            color: var(--navy);
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            font-size: 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Имитация страницы-лендинга */
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background-color: var(--bg-cream);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Декоративный контурный текст на фоне */
+        .bg-text {
+            position: absolute;
+            top: 20px;
+            left: -20px;
+            font-family: 'Rubik Mono One', sans-serif;
+            font-size: 120px;
+            color: transparent;
+            -webkit-text-stroke: 2px rgba(33, 43, 84, 0.1);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+            transform: rotate(-10deg);
+        }
+
+        /* Шапка */
+        .header-section {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: 'Rubik Mono One', sans-serif;
+            font-size: 64px;
+            line-height: 1.1;
+            margin-bottom: 10px;
+            color: var(--navy);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--navy);
+        }
+
+        /* Инпут и кнопка в стиле макета */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+            z-index: 1;
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 20px 30px;
+            font-size: 20px;
+            font-family: 'Montserrat', sans-serif;
+            border: 2px solid var(--navy);
+            border-radius: 10px;
+            background: var(--white);
+            color: var(--navy);
+            outline: none;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .input-group input:focus {
+            box-shadow: 0 0 0 4px rgba(33, 43, 84, 0.2);
+        }
+
+        .btn-navy {
+            background: var(--navy);
+            color: var(--white);
+            border: none;
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 22px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+
+        .btn-navy:hover {
+            background: var(--navy-light);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(33, 43, 84, 0.3);
+        }
+
+        /* Панель показателей (в стиле карточек из блока "Обо мне") */
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-box {
+            background: var(--white);
+            padding: 25px 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid var(--navy);
+            box-shadow: 4px 4px 0 rgba(33, 43, 84, 0.1);
+        }
+
+        .stat-box.navy-box {
+            background: var(--navy);
+            color: var(--white);
+        }
+
+        .stat-title {
+            font-size: 16px;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-family: 'Rubik Mono One', sans-serif;
+            font-size: 28px;
+        }
+
+        /* Игровое поле */
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .scenario-box {
+            background: var(--navy);
+            color: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(33, 43, 84, 0.3);
+        }
+
+        .round-counter {
+            display: inline-block;
+            background: var(--white);
+            color: var(--navy);
+            padding: 8px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .scenario-title {
+            font-family: 'Rubik Mono One', sans-serif;
+            font-size: 36px;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .scenario-text {
+            font-size: 22px;
+            line-height: 1.5;
+            color: #d1d8f0;
+            max-width: 800px;
+            margin: 0 auto;
+            font-weight: 400;
+        }
+
+        /* Варианты ответов (в стиле блока "Услуги") */
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            background: var(--navy);
+            color: var(--white);
+            border: none;
+            border-radius: 15px;
+            padding: 20px 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            position: relative;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-3px);
+            background: var(--navy-light);
+            box-shadow: 0 8px 15px rgba(33, 43, 84, 0.3);
+        }
+
+        /* Левая часть (текст) */
+        .choice-content {
+            flex: 1;
+            padding-right: 20px;
+            z-index: 2;
+        }
+
+        .choice-btn strong {
+            display: block;
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .choice-btn span {
+            font-size: 18px;
+            line-height: 1.4;
+            color: #d1d8f0;
+            font-weight: 400;
+        }
+
+        /* Правая часть (цифра и стрелка, как на макете) */
+        .choice-indicator {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 2;
+        }
+
+        .choice-number {
+            font-family: 'Rubik Mono One', sans-serif;
+            font-size: 40px;
+            opacity: 0.9;
+            color: var(--white);
+        }
+
+        .choice-arrow {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+
+        .choice-btn:hover .choice-arrow {
+            background: var(--white);
+            color: var(--navy);
+            border-color: var(--white);
+            transform: rotate(45deg);
+        }
+
+        /* Журнал */
+        .log-section {
+            margin-top: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .log-title {
+            font-family: 'Rubik Mono One', sans-serif;
+            font-size: 24px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .log {
+            background: var(--white);
+            border: 2px solid var(--navy);
+            color: var(--navy);
+            padding: 20px;
+            border-radius: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .log-entry { 
+            margin-bottom: 10px; 
+            border-bottom: 1px solid rgba(33, 43, 84, 0.2); 
+            padding-bottom: 10px;
+        }
+
+        /* Экран окончания */
+        .game-over-screen { 
+            text-align: center; 
+            padding: 60px 40px; 
+            background: var(--white); 
+            border-radius: 20px; 
+            border: 4px solid var(--navy);
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-over-screen h2 {
+            font-family: 'Rubik Mono One', sans-serif;
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--navy);
+        }
+
+        .grade-big { 
+            font-family: 'Rubik Mono One', sans-serif;
+            font-size: 56px; 
+            color: var(--white); 
+            background: var(--navy);
+            display: inline-block;
+            padding: 15px 40px;
+            border-radius: 15px;
+            margin: 20px 0; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 6px 6px 0 rgba(33, 43, 84, 0.3);
+        }
+
+        .score-details { 
+            display: flex; 
+            justify-content: center; 
+            flex-wrap: wrap;
+            gap: 30px; 
+            margin-bottom: 40px; 
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .score-details div {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: var(--bg-cream);
+            padding: 15px 25px;
+            border-radius: 10px;
+            border: 1px solid var(--navy);
+        }
+        
+        .score-details span {
+            font-family: 'Rubik Mono One', sans-serif;
+            font-size: 24px;
+            color: var(--navy);
+        }
+
+        .hidden { 
+            display: none !important; 
+        }
+
+        /* Адаптив для маленьких экранов */
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            h1 { font-size: 40px; }
+            .stats-panel { grid-template-columns: 1fr 1fr; }
+            .choice-btn { flex-direction: column; align-items: flex-start; }
+            .choice-indicator { margin-top: 15px; width: 100%; justify-content: flex-end; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="bg-text">ECONOMY</div>
+
+    <!-- Шапка / Ввод команды -->
+    <div class="header-section" id="setup-screen">
+        <h1>ЭКОНОМИЧЕСКИЙ<br>СИМУЛЯТОР</h1>
+        <div class="subtitle">УПРАВЛЯЙ ПРЕДПРИЯТИЕМ. ПРИВОДИ КОМАНДУ К ПОБЕДЕ.</div>
+        <div class="input-group">
+            <input type="text" id="team-name" placeholder="ВВЕДИТЕ НАЗВАНИЕ КОМАНДЫ...">
+            <button class="btn-navy" onclick="startGame()">НАЧАТЬ ИГРУ</button>
+        </div>
+    </div>
+
+    <!-- Панель показателей -->
+    <div class="stats-panel hidden" id="stats-panel">
+        <div class="stat-box navy-box">
+            <div class="stat-title">Капитал</div>
+            <div class="stat-value" id="val-cash">1 000 000 ₽</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-title">Износ</div>
+            <div class="stat-value" id="val-wear">0%</div>
+        </div>
+        <div class="stat-box navy-box">
+            <div class="stat-title">Репутация</div>
+            <div class="stat-value" id="val-rep">50/100</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-title">Выпуск</div>
+            <div class="stat-value" id="val-output">0</div>
+        </div>
+    </div>
+
+    <!-- Игровое поле -->
+    <div id="game-area" class="game-area hidden">
+        <div class="scenario-box">
+            <div id="round-counter" class="round-counter">Раунд 1 из 8</div>
+            <h2 id="scenario-title" class="scenario-title">...</h2>
+            <p id="scenario-text" class="scenario-text">...</p>
+        </div>
+
+        <div class="choices" id="choices-container">
+            <!-- Кнопки выбора будут добавляться через JS -->
+        </div>
+    </div>
+
+    <!-- Журнал событий -->
+    <div id="log-section" class="log-section hidden">
+        <div class="log-title">ЖУРНАЛ РЕШЕНИЙ</div>
+        <div class="log" id="log-container">
+            <div class="log-entry">Система инициализирована. Ожидание первого хода...</div>
+        </div>
+    </div>
+
+    <!-- Экран окончания игры -->
+    <div id="game-over" class="game-over-screen hidden">
+        <h2>ИГРА ЗАВЕРШЕНА!</h2>
+        <h3 style="font-size: 24px; margin-bottom: 20px;">Команда: <span id="final-team-name" style="color: var(--navy); font-weight: 800;"></span></h3>
+        
+        <div class="grade-big" id="final-grade">Пятерка</div>
+
+        <div class="score-details">
+            <div>Капитал <span id="final-cash"></span></div>
+            <div>Репутация <span id="final-rep"></span></div>
+            <div>Выпуск <span id="final-output"></span></div>
+            <div>Итоговый балл <span id="final-score"></span></div>
+        </div>
+
+        <p style="color: #666; font-size: 16px; margin-bottom: 30px; font-weight: 600;">Покажите этот экран преподавателю для фиксации результата.</p>
+        <button class="btn-navy" style="max-width: 400px; margin: 0 auto;" onclick="resetForNextTeam()">СЛЕДУЮЩАЯ КОМАНДА</button>
+    </div>
+</div>
+
+<script>
+    const gameData = {
+        teamName: "",
+        currentRound: 0,
+        maxRounds: 8,
+        cash: 1000000,
+        wear: 0,
+        reputation: 50,
+        output: 0,
+        currentScenarios: [],
+    };
+
+    const startScenarios = [
+        {
+            title: "Выбор отрасли",
+            text: "Вы начинаете бизнес. В какой отрасли промышленности открыть производство?",
+            choices: [
+                { text: "Тяжелое машиностроение", desc: "💸 Капитал: -500к. ⚙️ Износ: 10%. 📈 Выпуск: 1000 шт. 💪 Репутация: +5.", effect: { cash: -500000, wear: 10, output: 1000, rep: 5 } },
+                { text: "Легкая промышленность", desc: "💸 Капитал: -200к. ⚙️ Износ: 20%. 📈 Выпуск: 500 шт. 💪 Репутация: -5.", effect: { cash: -200000, wear: 20, output: 500, rep: -5 } },
+                { text: "Пищевая промышленность", desc: "💸 Капитал: -300к. ⚙️ Износ: 15%. 📈 Выпуск: 800 шт. 💪 Репутация: +10.", effect: { cash: -300000, wear: 15, output: 800, rep: 10 } },
+                { text: "IT-сектор", desc: "💸 Капитал: -400к. ⚙️ Износ: 0%. 📈 Выпуск: 1200 шт. 💪 Репутация: +15.", effect: { cash: -400000, wear: 0, output: 1200, rep: 15 } }
+            ]
+        },
+        {
+            title: "Закупка оборудования",
+            text: "Нужно выбрать стратегию закупки станков. От этого зависит производительность и износ.",
+            choices: [
+                { text: "Дешевые б/у станки", desc: "💸 Капитал: -100к. ⚙️ Износ: +40%. 📈 Выпуск: 300 шт.", effect: { cash: -100000, wear: 40, output: 300, rep: 0 } },
+                { text: "Новые китайские станки", desc: "💸 Капитал: -400к. ⚙️ Износ: +15%. 📈 Выпуск: 800 шт. 💪 Репутация: +5.", effect: { cash: -400000, wear: 15, output: 800, rep: 5 } },
+                { text: "Немецкие станки Премиум", desc: "💸 Капитал: -800к. ⚙️ Износ: +5%. 📈 Выпуск: 1500 шт. 💪 Репутация: +10.", effect: { cash: -800000, wear: 5, output: 1500, rep: 10 } },
+                { text: "Арендовать станки", desc: "💸 Капитал: -50к. ⚙️ Износ: 0% (не ваши). 📈 Выпуск: 200 шт. 💪 Репутация: -5.", effect: { cash: -50000, wear: 0, output: 200, rep: -5 } }
+            ]
+        }
+    ];
+
+    const mainScenarios = [
+        {
+            title: "Найм персонала",
+            text: "Какой подход к найму выбрать для максимальной эффективности?",
+            choices: [
+                { text: "Высококвалифицированные", desc: "💸 ЗП: -200к. 📈 Выпуск: +1000 шт. 💪 Репутация: +15.", effect: { cash: -200000, wear: 0, output: 1000, rep: 15 } },
+                { text: "Студенты-стажеры", desc: "💸 ЗП: -40к. 📈 Выпуск: +200 шт. ⚙️ Износ: +10% (портят оборудование).", effect: { cash: -40000, wear: 10, output: 200, rep: 0 } },
+                { text: "Низкоквалифицированные", desc: "💸 ЗП: -80к. 📈 Выпуск: +400 шт. 💪 Репутация: -10 (текучесть кадров).", effect: { cash: -80000, wear: 0, output: 400, rep: -10 } },
+                { text: "Роботизация", desc: "💸 Капитал: -300к. 📈 Выпуск: +600 шт. 💪 Репутация: -20.", effect: { cash: -300000, wear: 5, output: 600, rep: -20 } }
+            ]
+        },
+        {
+            title: "Рабочее время",
+            text: "Как организовать рабочий день сотрудников для эффективности?",
+            choices: [
+                { text: "Строго 8 часов", desc: "💸 ЗП: -100к. 📈 Выпуск: +500 шт. 💪 Репутация: +10.", effect: { cash: -100000, wear: 0, output: 500, rep: 10 } },
+                { text: "Сверхурочные", desc: "💸 ЗП: -250к. 📈 Выпуск: +900 шт. ⚙️ Износ: +10%. 💪 Репутация: -5.", effect: { cash: -250000, wear: 10, output: 900, rep: -5 } },
+                { text: "Сменный график (12ч)", desc: "💸 ЗП: -150к. 📈 Выпуск: +700 шт. ⚙️ Износ: +15%. 💪 Репутация: -10.", effect: { cash: -150000, wear: 15, output: 700, rep: -10 } },
+                { text: "6-часовой день", desc: "💸 ЗП: -80к. 📈 Выпуск: +300 шт. 💪 Репутация: +20 (люди счастливы).", effect: { cash: -80000, wear: 0, output: 300, rep: 20 } }
+            ]
+        },
+        {
+            title: "Амортизация",
+            text: "Оборудование изнашивается. Если износ превысит 90%, производство остановится (штраф).",
+            choices: [
+                { text: "Капитальный ремонт", desc: "💸 Капитал: -150к. ⚙️ Износ: -30%.", effect: { cash: -150000, wear: -30, output: 0, rep: 0 } },
+                { text: "Техобслуживание", desc: "💸 Капитал: -60к. ⚙️ Износ: -10%. 💪 Репутация: +5.", effect: { cash: -60000, wear: -10, output: 0, rep: 5 } },
+                { text: "Ничего не делать", desc: "💸 Экономия. ⚙️ Износ: +20%. 💪 Репутация: -5.", effect: { cash: 0, wear: 20, output: 0, rep: -5 } },
+                { text: "Продать старые", desc: "💸 Капитал: -300к. ⚙️ Износ: -50%. 💪 Репутация: +10.", effect: { cash: -300000, wear: -50, output: 0, rep: 10 } }
+            ]
+        },
+        {
+            title: "Ценовая стратегия",
+            text: "Какую цену установить? Высокая цена даст деньги, но снизит спрос.",
+            choices: [
+                { text: "Демпинг", desc: "💸 Доход: +600к. 💪 Репутация: -15. 📈 Выпуск: продано всё.", effect: { cash: 600000, wear: 0, output: 0, rep: -15 } },
+                { text: "Средняя цена", desc: "💸 Доход: +1200к. 💪 Репутация: +5.", effect: { cash: 1200000, wear: 0, output: 0, rep: 5 } },
+                { text: "Премиум", desc: "💸 Доход: +2000к. 💪 Репутация: -10.", effect: { cash: 2000000, wear: 0, output: 0, rep: -10 } },
+                { text: "B2B оптом", desc: "💸 Доход: +1500к. 💪 Репутация: +10. ⚙️ Износ: +5%.", effect: { cash: 1500000, wear: 5, output: 0, rep: 10 } }
+            ]
+        },
+        {
+            title: "Себестоимость",
+            text: "Как снизить издержки производства для повышения рентабельности?",
+            choices: [
+                { text: "Дешевое сырье", desc: "💸 Капитал: +200к. 💪 Репутация: -15 (страдает качество).", effect: { cash: 200000, wear: 0, output: 0, rep: -15 } },
+                { text: "Энергосбережение", desc: "💸 Капитал: -100к. ⚙️ Износ: -10%. 📈 Выпуск: +200 шт.", effect: { cash: -100000, wear: -10, output: 200, rep: 10 } },
+                { text: "Экономия на логистике", desc: "💸 Капитал: +150к. 📈 Выпуск: -100 шт.", effect: { cash: 150000, wear: 0, output: -100, rep: 0 } },
+                { text: "Уволить инженеров", desc: "💸 Капитал: +100к. ⚙️ Износ: +10%. 💪 Репутация: -10.", effect: { cash: 100000, wear: 10, output: 0, rep: -10 } }
+            ]
+        },
+        {
+            title: "Рентабельность",
+            text: "Как повысить эффективность и рентабельность предприятия?",
+            choices: [
+                { text: "Снизить издержки", desc: "💸 Капитал: +100к. 💪 Репутация: -10.", effect: { cash: 100000, wear: 0, output: 0, rep: -10 } },
+                { text: "Мотивация труда", desc: "💸 Капитал: -100к. 📈 Выпуск: +400 шт. 💪 Репутация: +15. ⚙️ Износ: +10%.", effect: { cash: -100000, wear: 10, output: 400, rep: 15 } },
+                { text: "Кредит", desc: "💸 Капитал: +500к. 📈 Выпуск: +300 шт.", effect: { cash: 500000, wear: 0, output: 300, rep: 0 } },
+                { text: "Продать фонды", desc: "💸 Капитал: +300к. ⚙️ Износ: -15%. 📈 Выпуск: -100 шт.", effect: { cash: 300000, wear: -15, output: -100, rep: 5 } }
+            ]
+        },
+        {
+            title: "Фондоотдача",
+            text: "Как улучшить показатель фондоотдачи (выпуск на 1 рубль фондов)?",
+            choices: [
+                { text: "Купить фонды", desc: "💸 Капитал: -400к. 📈 Выпуск: +500 шт. ⚙️ Износ: +10%.", effect: { cash: -400000, wear: 10, output: 500, rep: 0 } },
+                { text: "2 смены", desc: "💸 Капитал: 0. 📈 Выпуск: +600 шт. ⚙️ Износ: +15%. 💪 Репутация: -5.", effect: { cash: 0, wear: 15, output: 600, rep: -5 } },
+                { text: "Продать лишнее", desc: "💸 Капитал: +200к. ⚙️ Износ: -10%. 📈 Выпуск: -50 шт.", effect: { cash: 200000, wear: -10, output: -50, rep: 5 } },
+                { text: "Модернизация", desc: "💸 Капитал: -300к. 📈 Выпуск: +800 шт. ⚙️ Износ: -5%.", effect: { cash: -300000, wear: -5, output: 800, rep: 10 } }
+            ]
+        },
+        {
+            title: "Кризис",
+            text: "Экономический кризис! Спрос падает. Ваши действия?",
+            choices: [
+                { text: "Уволить 30%", desc: "💸 Капитал: +200к. 📈 Выпуск: -400 шт. 💪 Репутация: -25.", effect: { cash: 200000, wear: 0, output: -400, rep: -25 } },
+                { text: "Отпуск за свой счет", desc: "💸 Капитал: -100к. 📈 Выпуск: -200 шт. 💪 Репутация: +5.", effect: { cash: -100000, wear: 0, output: -200, rep: 5 } },
+                { text: "Дешевый аналог", desc: "💸 Капитал: +300к. 📈 Выпуск: +200 шт. 💪 Репутация: -15. ⚙️ Износ: +5%.", effect: { cash: 300000, wear: 5, output: 200, rep: -15 } },
+                { text: "Маркетинг в долг", desc: "💸 Капитал: -200к. 📈 Выпуск: +400 шт. 💪 Репутация: +20.", effect: { cash: -200000, wear: 0, output: 400, rep: 20 } }
+            ]
+        },
+        {
+            title: "Инновации",
+            text: "Как внедрять научно-технический прогресс на производстве?",
+            choices: [
+                { text: "Купить патент", desc: "💸 Капитал: -300к. 📈 Выпуск: +600 шт. 💪 Репутация: +15.", effect: { cash: -300000, wear: 0, output: 600, rep: 15 } },
+                { text: "Работать по старинке", desc: "💸 Капитал: +100к. ⚙️ Износ: +15%. 💪 Репутация: -10.", effect: { cash: 100000, wear: 15, output: 0, rep: -10 } },
+                { text: "Обучить инженеров", desc: "💸 Капитал: -100к. 📈 Выпуск: +200 шт. 💪 Репутация: +10.", effect: { cash: -100000, wear: 0, output: 200, rep: 10 } },
+                { text: "Бережливое пр-во", desc: "💸 Капитал: -50к. ⚙️ Износ: -10%. 📈 Выпуск: +300 шт.", effect: { cash: -50000, wear: -10, output: 300, rep: 5 } }
+            ]
+        },
+        {
+            title: "Соц. ответственность",
+            text: "Как бизнес будет взаимодействовать с обществом?",
+            choices: [
+                { text: "Очистные сооружения", desc: "💸 Капитал: -250к. 💪 Репутация: +25 (экология).", effect: { cash: -250000, wear: 0, output: 0, rep: 25 } },
+                { text: "Фитнес сотрудникам", desc: "💸 Капитал: -100к. 💪 Репутация: +15.", effect: { cash: -100000, wear: 0, output: 0, rep: 15 } },
+                { text: "Сократить соцпакет", desc: "💸 Капитал: +150к. 💪 Репутация: -20.", effect: { cash: 150000, wear: 0, output: 0, rep: -20 } },
+                { text: "Спонсировать школу", desc: "💸 Капитал: -50к. 💪 Репутация: +10.", effect: { cash: -50000, wear: 0, output: 0, rep: 10 } }
+            ]
+        },
+        {
+            title: "Риски",
+            text: "Поставщики сырья задерживают поставки. Как действовать?",
+            choices: [
+                { text: "Запас сырья", desc: "💸 Капитал: -150к. 📈 Выпуск: +200 шт.", effect: { cash: -150000, wear: 0, output: 200, rep: 10 } },
+                { text: "Новые поставщики", desc: "💸 Капитал: -50к. 📈 Выпуск: +100 шт. 💪 Репутация: +5.", effect: { cash: -50000, wear: 0, output: 100, rep: 5 } },
+                { text: "Ждать", desc: "📈 Выпуск: -300 шт. 💪 Репутация: -5.", effect: { cash: 0, wear: 0, output: -300, rep: -5 } },
+                { text: "Свой транспорт", desc: "💸 Капитал: -400к. 📈 Выпуск: +400 шт. 💪 Репутация: +15.", effect: { cash: -400000, wear: 0, output: 400, rep: 15 } }
+            ]
+        }
+    ];
+
+    const finalScenario = {
+        title: "Финальный баланс",
+        text: "Игра подходит к концу. У вас есть последняя возможность повлиять на итоговый балл.",
+        choices: [
+            { text: "Выплатить дивиденды", desc: "💸 Капитал: +400к. 💪 Репутация: -10.", effect: { cash: 400000, wear: 0, output: 0, rep: -10 } },
+            { text: "Капитальный ремонт", desc: "💸 Капитал: -200к. ⚙️ Износ: -30%. 💪 Репутация: +5.", effect: { cash: -200000, wear: -30, output: 0, rep: 5 } },
+            { text: "Детский сад", desc: "💸 Капитал: -100к. 💪 Репутация: +30.", effect: { cash: -100000, wear: 0, output: 0, rep: 30 } },
+            { text: "Премии рабочим", desc: "💸 Капитал: -300к. 📈 Выпуск: +100 шт. 💪 Репутация: +10.", effect: { cash: -300000, wear: 0, output: 100, rep: 10 } }
+        ]
+    };
+
+    const ui = {
+        setup: document.getElementById('setup-screen'),
+        teamNameInput: document.getElementById('team-name'),
+        stats: document.getElementById('stats-panel'),
+        cash: document.getElementById('val-cash'),
+        wear: document.getElementById('val-wear'),
+        rep: document.getElementById('val-rep'),
+        output: document.getElementById('val-output'),
+        
+        roundCounter: document.getElementById('round-counter'),
+        title: document.getElementById('scenario-title'),
+        text: document.getElementById('scenario-text'),
+        choices: document.getElementById('choices-container'),
+        
+        logSection: document.getElementById('log-section'),
+        log: document.getElementById('log-container'),
+        
+        gameArea: document.getElementById('game-area'),
+        gameOver: document.getElementById('game-over'),
+        finalTeamName: document.getElementById('final-team-name'),
+        finalCash: document.getElementById('final-cash'),
+        finalRep: document.getElementById('final-rep'),
+        finalOutput: document.getElementById('final-output'),
+        finalScore: document.getElementById('final-score'),
+        finalGrade: document.getElementById('final-grade')
+    };
+
+    function shuffleArray(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    function startGame() {
+        const name = ui.teamNameInput.value.trim();
+        if (!name) {
+            alert("Пожалуйста, введите название команды!");
+            return;
+        }
+        
+        gameData.teamName = name;
+        gameData.currentRound = 0;
+        gameData.cash = 1000000;
+        gameData.wear = 0;
+        gameData.reputation = 50;
+        gameData.output = 0;
+        
+        let selectedScenarios = [...startScenarios];
+        let shuffledMain = shuffleArray([...mainScenarios]);
+        selectedScenarios = selectedScenarios.concat(shuffledMain.slice(0, 5));
+        selectedScenarios.push(finalScenario);
+        
+        gameData.currentScenarios = selectedScenarios.map(scenario => {
+            return {
+                ...scenario,
+                choices: shuffleArray([...scenario.choices])
+            };
+        });
+        
+        ui.setup.classList.add('hidden');
+        ui.stats.classList.remove('hidden');
+        ui.gameArea.classList.remove('hidden');
+        ui.logSection.classList.remove('hidden');
+        ui.gameOver.classList.add('hidden');
+        
+        ui.log.innerHTML = `<div class="log-entry">Команда "${name}" начала игру. Сгенерированы уникальные вопросы!</div>`;
+        
+        updateUI();
+        loadRound();
+    }
+
+    function resetForNextTeam() {
+        ui.gameOver.classList.add('hidden');
+        ui.stats.classList.add('hidden');
+        ui.gameArea.classList.add('hidden');
+        ui.logSection.classList.add('hidden');
+        
+        ui.setup.classList.remove('hidden');
+        ui.teamNameInput.value = '';
+        ui.teamNameInput.focus();
+    }
+
+    function loadRound() {
+        if (gameData.currentRound >= gameData.maxRounds) {
+            endGame();
+            return;
+        }
+
+        const scenario = gameData.currentScenarios[gameData.currentRound];
+        
+        ui.roundCounter.innerText = `Раунд ${gameData.currentRound + 1} из ${gameData.maxRounds}`;
+        ui.title.innerText = scenario.title;
+        ui.text.innerText = scenario.text;
+        
+        ui.choices.innerHTML = '';
+        ui.choices.style.pointerEvents = 'auto';
+
+        scenario.choices.forEach((choice, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            
+            // Форматируем номер (01, 02, 03...)
+            const numStr = (index + 1).toString().padStart(2, '0');
+            
+            btn.innerHTML = `
+                <div class="choice-content">
+                    <strong>${choice.text}</strong>
+                    <span>${choice.desc}</span>
+                </div>
+                <div class="choice-indicator">
+                    <div class="choice-number">${numStr}</div>
+                    <div class="choice-arrow">↗</div>
+                </div>
+            `;
+            btn.onclick = () => makeChoice(index, choice.effect);
+            ui.choices.appendChild(btn);
+        });
+    }
+
+    function makeChoice(index, effect) {
+        ui.choices.style.pointerEvents = 'none';
+
+        gameData.cash += effect.cash;
+        gameData.wear += effect.wear;
+        gameData.reputation += effect.rep;
+        gameData.output += effect.output;
+
+        if (gameData.wear < 0) gameData.wear = 0;
+        if (gameData.wear > 100) gameData.wear = 100;
+        if (gameData.reputation < 0) gameData.reputation = 0;
+        if (gameData.reputation > 100) gameData.reputation = 100;
+        if (gameData.output < 0) gameData.output = 0;
+
+        const scenario = gameData.currentScenarios[gameData.currentRound];
+        const choiceText = scenario.choices[index].text;
+        addLog(`[Р${gameData.currentRound + 1}] ${scenario.title}: "${choiceText}"`);
+        
+        if (gameData.cash < 0) {
+            addLog("ВНИМАНИЕ: Отрицательный капитал! Банкротство.");
+            endGame();
+            return;
+        }
+        if (gameData.wear >= 90) {
+            addLog("ВНИМАНИЕ: Оборудование изношено (>=90%). Производство остановлено, штраф 500 000 ₽.");
+            gameData.cash -= 500000;
+            gameData.wear = 50; 
+        }
+
+        updateUI();
+        gameData.currentRound++;
+        
+        if (gameData.currentRound < gameData.maxRounds) {
+             setTimeout(loadRound, 800);
+        } else {
+             setTimeout(endGame, 800);
+        }
+    }
+
+    function updateUI() {
+        ui.cash.innerText = formatMoney(gameData.cash);
+        ui.wear.innerText = gameData.wear + '%';
+        ui.rep.innerText = gameData.reputation + '/100';
+        ui.output.innerText = gameData.output;
+    }
+
+    function addLog(message) {
+        const div = document.createElement('div');
+        div.className = 'log-entry';
+        div.innerText = `[${gameData.teamName}] ${message}`;
+        ui.log.appendChild(div);
+        ui.log.scrollTop = ui.log.scrollHeight; 
+    }
+
+    function formatMoney(amount) {
+        return amount.toLocaleString('ru-RU') + ' ₽';
+    }
+
+    function endGame() {
+        ui.gameArea.classList.add('hidden');
+        ui.gameOver.classList.remove('hidden');
+        
+        ui.finalTeamName.innerText = gameData.teamName;
+        ui.finalCash.innerText = formatMoney(gameData.cash);
+        ui.finalRep.innerText = gameData.reputation + '/100';
+        ui.finalOutput.innerText = gameData.output + ' шт.';
+        
+        let finalScore = gameData.cash + (gameData.reputation * 15000) + (gameData.output * 300);
+        
+        let grade = "Двойка (Банкрот)";
+        
+        if (gameData.cash < 0) {
+            grade = "Двойка 💀";
+        } else if (finalScore > 4500000) {
+            grade = "Пятерка 🏆";
+        } else if (finalScore > 3500000) {
+            grade = "Четверка ⭐";
+        } else if (finalScore > 2000000) {
+            grade = "Тройка 😐";
+        } else {
+            grade = "Двойка 📉";
+        }
+
+        ui.finalScore.innerText = finalScore.toLocaleString('ru-RU');
+        ui.finalGrade.innerText = grade;
+        
+        addLog(`--- ИГРА ОКОНЧЕНА. Балл: ${finalScore.toLocaleString('ru-RU')}. Оценка: ${grade} ---`);
+    }
+</script>
+</body>
+</html>
