@@ -402,19 +402,38 @@
                 font-size: 16px; 
             }
             .container {
-                padding: 20px 15px;
+                padding: 25px 15px;
                 border-radius: 15px;
             }
+            
+            /* Скрываем фоновую надпись, чтобы не было прокрутки вправо */
+            .bg-text {
+                display: none; 
+            }
+
+            /* Уменьшаем заголовок, чтобы влезал в экран */
             h1 {
-                font-size: 32px; 
-                letter-spacing: 1px;
+                font-size: 28px; 
+                letter-spacing: 0px;
+                word-wrap: break-word;
             }
             .subtitle {
                 font-size: 14px;
+                margin-bottom: 20px;
             }
-            .input-group input, .btn-navy {
+            
+            /* Уменьшаем высоту инпута */
+            .input-group input {
                 padding: 15px;
                 font-size: 16px;
+                border-radius: 8px;
+            }
+            
+            /* Кнопка */
+            .btn-navy {
+                padding: 15px;
+                font-size: 16px;
+                border-radius: 8px;
             }
             
             /* Сетка показателей 2х2 */
@@ -517,8 +536,8 @@
         <h1>ЭКОНОМИЧЕСКИЙ<br>СИМУЛЯТОР</h1>
         <div class="subtitle">УПРАВЛЯЙ ПРЕДПРИЯТИЕМ. ПРИВОДИ КОМАНДУ К ПОБЕДЕ.</div>
         <div class="input-group">
-            <input type="text" id="team-name" placeholder="ВВЕДИТЕ НАЗВАНИЕ КОМАНДЫ...">
-            <button class="btn-navy" onclick="startGame()">СВЯЗАТЬСЯ (НАЧАТЬ ИГРУ)</button>
+            <input type="text" id="team-name" placeholder="НАЗВАНИЕ КОМАНДЫ">
+            <button class="btn-navy" onclick="startGame()">НАЧАТЬ ИГРУ</button>
         </div>
     </div>
 
@@ -954,3 +973,4 @@
 </script>
 </body>
 </html>
+```
