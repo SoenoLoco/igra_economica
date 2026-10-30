@@ -62,7 +62,7 @@
 
         .header-section {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
             position: relative;
             z-index: 1;
         }
@@ -133,6 +133,72 @@
             transform: translateY(-3px);
             box-shadow: 0 10px 20px rgba(33, 43, 84, 0.3);
         }
+
+        /* === БЛОК ПРАВИЛ === */
+        .rules-section {
+            margin-top: 40px;
+            position: relative;
+            z-index: 1;
+            background: var(--white);
+            border: 2px solid var(--navy);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 6px 6px 0 rgba(33, 43, 84, 0.1);
+        }
+
+        .rules-title {
+            font-family: 'Rubik Mono One', sans-serif;
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--navy);
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .rule-card {
+            background: var(--bg-cream);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            border: 1px solid rgba(33, 43, 84, 0.1);
+        }
+
+        .rule-icon {
+            font-family: 'Rubik Mono One', sans-serif;
+            font-size: 24px;
+            color: var(--navy);
+            background: var(--white);
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            border: 2px solid var(--navy);
+            flex-shrink: 0;
+        }
+
+        .rule-content h4 {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .rule-content p {
+            font-size: 16px;
+            line-height: 1.4;
+            color: #444;
+            font-weight: 500;
+        }
+        /* ================= */
 
         .stats-panel {
             display: grid;
@@ -405,13 +471,9 @@
                 padding: 25px 15px;
                 border-radius: 15px;
             }
-            
-            /* Скрываем фоновую надпись, чтобы не было прокрутки вправо */
             .bg-text {
                 display: none; 
             }
-
-            /* Уменьшаем заголовок, чтобы влезал в экран */
             h1 {
                 font-size: 28px; 
                 letter-spacing: 0px;
@@ -421,19 +483,44 @@
                 font-size: 14px;
                 margin-bottom: 20px;
             }
-            
-            /* Уменьшаем высоту инпута */
             .input-group input {
                 padding: 15px;
                 font-size: 16px;
                 border-radius: 8px;
             }
-            
-            /* Кнопка */
             .btn-navy {
                 padding: 15px;
                 font-size: 16px;
                 border-radius: 8px;
+            }
+
+            /* Правила на телефоне */
+            .rules-section {
+                padding: 20px 15px;
+                border-radius: 15px;
+                margin-top: 25px;
+            }
+            .rules-title {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+            .rules-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .rule-card {
+                padding: 15px;
+            }
+            .rule-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 18px;
+            }
+            .rule-content h4 {
+                font-size: 14px;
+            }
+            .rule-content p {
+                font-size: 12px;
             }
             
             /* Сетка показателей 2х2 */
@@ -531,14 +618,52 @@
 <div class="container">
     <div class="bg-text">ECONOMY</div>
 
-    <!-- Шапка / Ввод команды -->
+    <!-- Шапка / Ввод команды / Правила -->
     <div class="header-section" id="setup-screen">
         <h1>ЭКОНОМИЧЕСКИЙ<br>СИМУЛЯТОР</h1>
         <div class="subtitle">УПРАВЛЯЙ ПРЕДПРИЯТИЕМ. ПРИВОДИ КОМАНДУ К ПОБЕДЕ.</div>
-        <div class="input-group">
-            <input type="text" id="team-name" placeholder="НАЗВАНИЕ КОМАНДЫ">
+        
+        <div class="input-group" style="margin-bottom: 40px;">
+            <input type="text" id="team-name" placeholder="ВВЕДИТЕ НАЗВАНИЕ КОМАНДЫ...">
             <button class="btn-navy" onclick="startGame()">НАЧАТЬ ИГРУ</button>
         </div>
+
+        <!-- НОВЫЙ БЛОК: ПРАВИЛА ИГРЫ -->
+        <div class="rules-section">
+            <div class="rules-title">ПРАВИЛА ИГРЫ</div>
+            <div class="rules-grid">
+                <div class="rule-card">
+                    <div class="rule-icon">01</div>
+                    <div class="rule-content">
+                        <h4>Ваша цель</h4>
+                        <p>Управлять заводом 8 раундов (1 год) и заработать максимальный итоговый балл. Балл складывается из Капитала, Репутации и Объема выпуска.</p>
+                    </div>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">02</div>
+                    <div class="rule-content">
+                        <h4>Показатели</h4>
+                        <p>Следите за 4 шкалами. Если Капитал уйдет в минус — банкротство. Если Износ достигнет 90% — авария и штраф.</p>
+                    </div>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">03</div>
+                    <div class="rule-content">
+                        <h4>Принятие решений</h4>
+                        <p>В каждом раунде читайте ситуацию и выбирайте один из 4 вариантов. У каждого выбора есть плюсы и минусы.</p>
+                    </div>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">04</div>
+                    <div class="rule-content">
+                        <h4>Соревнование</h4>
+                        <p>Играйте по очереди. На экране результатов появятся итоговые цифры. Чья команда наберет больше баллов — та и победила!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- КОНЕЦ БЛОКА ПРАВИЛ -->
+
     </div>
 
     <!-- Панель показателей -->
@@ -973,4 +1098,3 @@
 </script>
 </body>
 </html>
-```
